@@ -1,0 +1,3 @@
+[submodule "lib/tu-flipper-max3421e"]
+	path = lib/tu-flipper-max3421e
+	url = https://github.com/zacharyweiss/tu-flipper-max3421e
