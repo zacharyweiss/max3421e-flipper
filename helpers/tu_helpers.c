@@ -1,57 +1,23 @@
-
-#include "../usbhost_i.h"
+#include "usbhost_i.h"
 #include "glue.h"
+#include "tu_helpers.h"
 
 #define TAG "TUHelpers"
-
-void usb_init() {
-    FURI_LOG_I(TAG, "usb_init() started");
-    board_init();
-
-    tuh_init(BOARD_TUH_RHPORT);
-
-    FURI_LOG_I(TAG, "usb_init() finished");
-}
-
-void usb_deinit() {
-    tuh_deinit(BOARD_TUH_RHPORT);
-    board_deinit();
-}
-
-tusb_desc_device_t desc_device;
 
 uint8_t buf_pool[BUF_COUNT][64];
 uint8_t buf_owner[BUF_COUNT] = {0}; // device address that owns buffer
 
 static void print_utf16(uint16_t* temp_buf, size_t buf_len);
-void print_device_descriptor(tuh_xfer_t* xfer);
 void parse_config_descriptor(uint8_t dev_addr, tusb_desc_configuration_t const* desc_cfg);
 
 uint8_t* get_hid_buf(uint8_t daddr);
 void free_hid_buf(uint8_t daddr);
 
-/*------------- TinyUSB Callbacks -------------*/
-
-// Invoked when device is mounted (configured)
-void tuh_mount_cb(uint8_t daddr) {
-    FURI_LOG_I(TAG, "Device attached, address = %d\r\n", daddr);
-
-    // Get Device Descriptor
-    // TODO: invoking control transfer now has issue with mounting hub with multiple devices attached, fix later
-    tuh_descriptor_get_device(daddr, &desc_device, 18, print_device_descriptor, 0);
-}
-
-/// Invoked when device is unmounted (bus reset/unplugged)
-void tuh_umount_cb(uint8_t daddr) {
-    FURI_LOG_I(TAG, "Device removed, address = %d\r\n", daddr);
-    free_hid_buf(daddr);
-}
-
 //--------------------------------------------------------------------+
 // Device Descriptor
 //--------------------------------------------------------------------+
 
-void print_device_descriptor(tuh_xfer_t* xfer) {
+void print_device_descriptor(tuh_xfer_t* xfer, tusb_desc_device_t desc_device) {
     if(XFER_RESULT_SUCCESS != xfer->result) {
         FURI_LOG_I(TAG, "Failed to get device descriptor\r\n");
         return;
