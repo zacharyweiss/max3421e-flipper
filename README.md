@@ -15,5 +15,5 @@ TODO:
 - Cleanup worker, setup proper callbacks w/ stream buffer & textbox
 - Figure out why MAX never asserts `OSCOKIRQ` post-issuing `USBCTL CHIPRES`
   - Others have [reported this as a chip misdesign](https://electronics.stackexchange.com/questions/372236/bugs-in-maxim-chip-max3421e-used-as-usb-host)
-  [ ] test replacing wait for `OSCOKIRQ` w/ simple delay
-  [ ] PR `tinyusb`?
+  - [ ] test replacing wait for `OSCOKIRQ` w/ simple delay
+  - [ ] PR `tinyusb`?
